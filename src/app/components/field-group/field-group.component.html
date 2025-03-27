@@ -1,0 +1,158 @@
+<div class="container">
+  <div class="row">
+    <!-- Left Panel: Group List -->
+    <div class="col-3">
+      <div class="d-flex">
+      <h5>Field Groups</h5>
+      <button class="btn create" (click)="createNewGroup()">➕ Create new</button>
+    </div>
+      <ul>
+        <li *ngFor="let group of fieldGroups" [class.selected]="group.isSelected" (click)="selectGroup(group)">
+          {{ group.name }}
+        </li>
+      </ul>
+      
+    </div>
+
+    <!-- Middle Panel: Selected Groups with Form Elements -->
+    <div class="col-6">
+      <div *ngFor="let group of selectedGroups" class="group-container">
+
+        <div class="group-header">
+          <h4>{{ group.name }}</h4>
+          <p>{{ group.description }}</p>
+          <div class="group-actions">
+            <button class="btn btn-warning" (click)="editGroupProperty(group, 'name')">
+              ✏️ Edit Name
+            </button>
+            <button class="btn btn-secondary" (click)="editGroupProperty(group, 'description')">
+              📄 Edit Description
+            </button>
+            <button class="btn btn-success" (click)="copyGroup(group)">
+              📋 Copy
+            </button>
+            <button class="btn btn-danger" (click)="deleteGroup(group)">
+              ❌ Delete Group
+            </button>
+          </div>
+        </div>
+
+        <div *ngFor="let element of group.elements; let i = index" class="form-element">
+          <div class="mb-3">
+            <!-- Email Input -->
+            <label class="form-label">Email:</label>
+            <input
+              *ngIf="!element.isEditing"
+              type="email"
+              class="form-control"
+              [value]="element.email"
+             
+            />
+            <input
+              *ngIf="element.isEditing"
+              type="email"
+              class="form-control"
+              [(ngModel)]="element.email"
+              (input)="validateEmail(element, i)"
+              [class.is-invalid]="!element.isValidEmail && element.isEditing"
+            />
+            <div *ngIf="!element.isValidEmail && element.isEditing" class="invalid-feedback">
+              ⚠️ Please enter a valid email address.
+            </div>
+    
+            <!-- Description Textarea -->
+            <label class="form-label mt-2">Description:</label>
+            <textarea
+              *ngIf="!element.isEditing"
+              class="form-control"
+              rows="2"
+              [value]="element.description"
+              
+            ></textarea>
+            <textarea
+              *ngIf="element.isEditing"
+              class="form-control"
+              rows="2"
+              [(ngModel)]="element.description"
+            ></textarea>
+    
+            <!-- Action Buttons -->
+            <div class="mt-2">
+              <button *ngIf="!element.isEditing" class="btn btn-sm btn-warning me-1" (click)="editElement(group, i)">✏️ Edit</button>
+              <button *ngIf="element.isEditing" class="btn btn-sm btn-success me-1"  [disabled]="!element.isValidEmail" (click)="saveElement(group, i)">💾 Save</button>
+              <button class="btn btn-sm btn-secondary me-1" (click)="copyElement(group, i)">📋 Copy</button>
+              <button class="btn btn-sm btn-danger" (click)="removeElement(group, i)">❌ Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drop zone hint when empty -->
+        <div *ngIf="group.elements.length === 0" class="drop-hint">
+          Drag form elements here
+        </div>
+      </div>
+
+      <!-- No Group Selected -->
+      <div *ngIf="selectedGroups.length === 0" class="no-group">
+        <p>No groups selected. Please select a group to add it to the middle panel.</p>
+      </div>
+    </div>
+
+    <!-- Right Panel: Available Form Elements -->
+    <div class="col-3">
+      <h5>Form Elements</h5>
+      <input type="text" class="search"  placeholder=" Search..">
+      <p>TEXT</p>
+      <div class="example-box" cdkDrag>
+        <label for="dragInput">Single Line Text:</label>
+        <input id="dragInput" type="text" placeholder="Enter text" class="form-control" />
+      </div>
+      <div class="example-box" cdkDrag>
+        <label for="dragTextarea">Multi Line Text:</label>
+        <textarea id="dragTextarea" rows="2" placeholder="Enter multiple lines" class="form-control"></textarea>
+      </div>
+      <div class="example-box" cdkDrag>
+        <label for="dragTextarea">Integer Text Area:</label>
+        <textarea id="dragTextarea" rows="2" placeholder="Enter integers only" class="form-control"
+          [(ngModel)]="integerValue" (input)="validateInteger($event)"></textarea>
+        <div *ngIf="!isValid" class="error-msg">⚠️ Please enter only integer values.</div>
+      </div>
+      <hr>
+      <p>DATE</p>
+      <div class="example-box" cdkDrag>
+        <label for="dragDate">Select Date:</label>
+        <input id="dragDate" type="date" class="form-control" />
+      </div>
+      <div class="example-box" cdkDrag>
+        <label for="dragTime">Select Time:</label>
+        <input id="dragTime" type="time" class="form-control" />
+      </div>
+      <div class="example-box" cdkDrag>
+        <label for="dragDateTime">Select Date & Time:</label>
+        <input id="dragDateTime" type="datetime-local" class="form-control" />
+      </div>
+      <hr>
+      <p>MULTI</p>
+      <div class="example-box" cdkDrag>
+        <label for="dragDropdown">Single Selection</label>
+        <select id="dragDropdown" class="form-control" [(ngModel)]="selectedOption">
+          <option value="" disabled>Select an option</option>
+          <option *ngFor="let option of dropdownOptions" [value]="option">{{ option }}</option>
+        </select>
+      </div>
+      <hr>
+      <p>MEDIA</p>
+      <div class="example-box" cdkDrag>
+        <label for="fileUpload">Upload File:</label>
+        <input
+          id="fileUpload"
+          type="file"
+          class="form-control"
+          (change)="onFileSelected($event)"
+        />
+        <div *ngIf="uploadedFileName" class="success-msg">✅ File Uploaded: {{ uploadedFileName }}</div>
+      </div>
+
+    </div>
+  </div>
+</div>
