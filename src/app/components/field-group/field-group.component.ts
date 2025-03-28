@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 @Component({
   selector: 'app-field-group',
   standalone: true,
-  imports: [FormsModule, CommonModule, DragDropModule, CalendarModule, CdkDrag, MatFormFieldModule, MatSelectModule, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, DragDropModule, CalendarModule, CdkDrag],
   templateUrl: './field-group.component.html',
   styleUrl: './field-group.component.css',
 })
@@ -68,8 +68,6 @@ export class FieldGroupComponent {
     return Math.random().toString(36).substring(2, 9);
   }
 
-
-  // ✅ Select a group and add to the middle panel
   selectGroup(group: FieldGroup) {
     const isAlreadySelected = this.selectedGroups.some((g) => g.id === group.id);
     if (!isAlreadySelected) {
@@ -81,7 +79,6 @@ export class FieldGroupComponent {
     }
   }
 
-  // ✅ Create a new group dynamically
   createNewGroup() {
     const newGroup: FieldGroup = {
       id: this.fieldGroups.length + 1,
@@ -170,8 +167,7 @@ export class FieldGroupComponent {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     element.isValidEmail = emailPattern.test(element.email);
   }
-  
-  // Save updated element
+
   saveElement(group: FieldGroup, index: number) {
     if (group.elements[index].isValidEmail) {
       group.elements[index].isEditing = false;
